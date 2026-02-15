@@ -1,0 +1,36 @@
+services:
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    volumes:
+      - ./server/src:/home/node/app/src
+      - ./server/nodemon.json:/home/node/app/nodemon.json
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3000:3000"
+    command: npm run dev
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    environment:
+      - WDS_SOCKET_PORT=0 
+      - WATCHPACK_POLLING=true 
+    ports:
+      - "5173:5173"
+    command: npm run dev
+  nginx:
+    image: nginx:alpine
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - backend
+      - frontend
