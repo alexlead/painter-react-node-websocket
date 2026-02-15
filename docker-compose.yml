@@ -8,8 +8,7 @@ services:
       - ./server/nodemon.json:/home/node/app/nodemon.json
     environment:
       - NODE_ENV=development
-    ports:
-      - "3000:3000"
+      - PORT=3000
     command: npm run dev
   frontend:
     build:
@@ -21,8 +20,7 @@ services:
     environment:
       - WDS_SOCKET_PORT=0 
       - WATCHPACK_POLLING=true 
-    ports:
-      - "5173:5173"
+      - PORT=5173
     command: npm run dev
   nginx:
     image: nginx:alpine
