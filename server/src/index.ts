@@ -58,13 +58,22 @@ app.post('/api/image', (req: Request, res: Response) => {
 
 app.get('/api/image', (req: Request, res: Response) => {
     try {
-        const filePath = path.resolve(__dirname, 'files', `${req.query.id}.jpg`);
+        const fileId = req.query.id as string;
+        const filePath = path.resolve(__dirname, 'files', `${fileId}.jpg`);
+
+        // ПРОВЕРКА: существует ли файл?
+        if (!fs.existsSync(filePath)) {
+            // Если файла нет, просто возвращаем сообщение, что холст пустой
+            // Либо можно вернуть статус 204 (No Content)
+            return res.status(404).json({ message: "File not found, starting with empty canvas" });
+        }
+
         const file = fs.readFileSync(filePath);
         const data = `data:image/png;base64,` + file.toString('base64');
         res.json(data);
     } catch (e) {
         console.error(e);
-        return res.status(500).json('error');
+        return res.status(500).json({ error: 'Server error while reading file' });
     }
 });
 
